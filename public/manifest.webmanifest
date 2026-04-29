@@ -1,0 +1,21 @@
+{
+  "name": "GhostPlayer",
+  "short_name": "GhostPlayer",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "description": "GhostPlayer - Stealth Video Experience",
+  "icons": [
+    {
+      "src": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=192&h=192&fit=crop",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=512&h=512&fit=crop",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

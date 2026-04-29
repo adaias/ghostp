@@ -1,0 +1,6 @@
+{
+  "name": "GhostPlayer",
+  "description": "Un reproductor de video anónimo y minimalista con modo stealth, reproducción en segundo plano y bloqueo selectivo de anuncios simulado.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
