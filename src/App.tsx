@@ -30,6 +30,54 @@ interface PlaylistItem {
   timestamp: number;
 }
 
+function UnlockButton({ onUnlock, icon }: { onUnlock: () => void; icon: React.ReactNode }) {
+  const [isHolding, setIsHolding] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const timerRef = useRef<number | null>(null);
+
+  const startHolding = () => {
+    setIsHolding(true);
+    const start = Date.now();
+    const duration = 1000; // 1 second hold
+
+    timerRef.current = window.setInterval(() => {
+      const elapased = Date.now() - start;
+      const nextProgress = Math.min((elapased / duration) * 100, 100);
+      setProgress(nextProgress);
+
+      if (nextProgress >= 100) {
+        clearInterval(timerRef.current!);
+        onUnlock();
+      }
+    }, 16);
+  };
+
+  const stopHolding = () => {
+    setIsHolding(false);
+    setProgress(0);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+  };
+
+  return (
+    <motion.button
+      onPointerDown={startHolding}
+      onPointerUp={stopHolding}
+      onPointerLeave={stopHolding}
+      className="relative w-14 h-14 rounded-full bg-white/5 border border-white/5 flex items-center justify-center text-white/5 transition-all pointer-events-auto active:scale-95 overflow-hidden"
+    >
+      <div 
+        className="absolute bottom-0 left-0 right-0 bg-white/10 transition-all ease-linear"
+        style={{ height: `${progress}%` }}
+      />
+      <div className={cn("relative z-10 transition-colors duration-300", isHolding ? "text-white/40" : "text-white/5")}>
+        {icon}
+      </div>
+    </motion.button>
+  );
+}
+
 export default function App() {
   const [url, setUrl] = useState('');
   const [inputUrl, setInputUrl] = useState('');
@@ -324,52 +372,46 @@ export default function App() {
               )}
             </div>
 
-            {/* Blackout Full Overlay (Specific buttons to escape) */}
+            {/* Blackout Full Overlay (Hold buttons to escape) */}
             {isBlackout && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="fixed inset-0 z-[100] cursor-none flex flex-col items-center justify-center bg-black overflow-hidden"
+                className="fixed inset-0 z-[100] cursor-none flex flex-col items-center justify-center bg-black overflow-hidden touch-none"
               >
-                {/* Center Indicator (Very faint) */}
+                {/* Center Indicator (Hidden/Stealth) */}
                 <motion.div 
-                    animate={{ opacity: [0.03, 0.08, 0.03] }}
-                    transition={{ duration: 5, repeat: Infinity }}
+                    animate={{ opacity: [0.02, 0.05, 0.02] }}
+                    transition={{ duration: 8, repeat: Infinity }}
                     className="flex flex-col items-center gap-4 pointer-events-none"
                 >
-                    <Ghost className="w-16 h-16 text-slate-800" />
-                    <div className="text-slate-900 text-[8px] uppercase font-bold tracking-[0.8em] select-none">
-                      Stealth Engine Active
+                    <Ghost className="w-16 h-16 text-slate-900" />
+                    <div className="text-slate-900 text-[7px] uppercase font-bold tracking-[1em] select-none">
+                      Ghost Engine Active
                     </div>
                 </motion.div>
 
-                {/* Simulated iPhone-style bottom controls to "Wake" */}
-                <div className="absolute bottom-16 inset-x-0 px-10 flex justify-between items-center">
-                  {/* Power/Flashlight Button Simulation */}
-                  <motion.button
-                    whileTap={{ scale: 0.9 }}
-                    onClick={toggleBlackout}
-                    className="w-12 h-12 rounded-full bg-slate-900/10 border border-slate-900/20 flex items-center justify-center text-slate-900/30 hover:bg-slate-900/40 hover:text-slate-800 transition-all active:ring-2 active:ring-slate-800"
-                  >
-                    <Zap className="w-5 h-5 fill-current" />
-                  </motion.button>
+                {/* iPhone style lock screen bottom controls */}
+                <div className="absolute bottom-16 inset-x-0 px-10 flex justify-between items-center pointer-events-none">
+                  {/* Left Button - Hold to unlock */}
+                  <UnlockButton 
+                    onUnlock={toggleBlackout} 
+                    icon={<Zap className="w-5 h-5 fill-current" />} 
+                  />
 
-                  <div className="flex flex-col items-center gap-2 pointer-events-none">
-                    <div className="w-32 h-1 bg-slate-900/20 rounded-full" />
-                    <span className="text-[10px] text-slate-900/40 uppercase tracking-[0.2em]">Ghost Mode</span>
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-32 h-1 bg-slate-900/10 rounded-full" />
+                    <span className="text-[9px] text-slate-900/20 uppercase tracking-[0.3em]">Encrypted Session</span>
                   </div>
 
-                  {/* Camera Button Simulation - Also acts as unlock */}
-                  <motion.button
-                    whileTap={{ scale: 0.9 }}
-                    onClick={toggleBlackout}
-                    className="w-12 h-12 rounded-full bg-slate-900/10 border border-slate-900/20 flex items-center justify-center text-slate-900/30 hover:bg-slate-900/40 hover:text-slate-800 transition-all active:ring-2 active:ring-slate-800"
-                  >
-                    <Search className="w-5 h-5" />
-                  </motion.button>
+                  {/* Right Button - Hold to unlock */}
+                  <UnlockButton 
+                    onUnlock={toggleBlackout} 
+                    icon={<Search className="w-5 h-5" />} 
+                  />
                 </div>
 
-                <div className="absolute top-12 text-slate-900/20 text-[10px] font-mono select-none">
+                <div className="absolute top-12 text-slate-900/10 text-[10px] font-mono select-none">
                     {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </div>
               </motion.div>
