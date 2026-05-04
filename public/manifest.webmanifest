@@ -1,7 +1,7 @@
 {
   "name": "GhostPlayer",
   "short_name": "GhostPlayer",
-  "start_url": "/ghostp/",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",

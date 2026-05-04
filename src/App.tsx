@@ -324,26 +324,53 @@ export default function App() {
               )}
             </div>
 
-            {/* Blackout Full Overlay (Tap to escape) */}
+            {/* Blackout Full Overlay (Specific buttons to escape) */}
             {isBlackout && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                onClick={toggleBlackout}
-                className="fixed inset-0 z-[100] cursor-none flex flex-col items-center justify-center bg-black"
+                className="fixed inset-0 z-[100] cursor-none flex flex-col items-center justify-center bg-black overflow-hidden"
               >
+                {/* Center Indicator (Very faint) */}
                 <motion.div 
-                    animate={{ opacity: [0.05, 0.15, 0.05] }}
-                    transition={{ duration: 4, repeat: Infinity }}
-                    className="flex flex-col items-center gap-4"
+                    animate={{ opacity: [0.03, 0.08, 0.03] }}
+                    transition={{ duration: 5, repeat: Infinity }}
+                    className="flex flex-col items-center gap-4 pointer-events-none"
                 >
-                    <Ghost className="w-12 h-12 text-slate-800" />
-                    <div className="text-slate-900 text-[10px] uppercase tracking-[0.4em] select-none">
-                      Ghost Play Active
+                    <Ghost className="w-16 h-16 text-slate-800" />
+                    <div className="text-slate-900 text-[8px] uppercase font-bold tracking-[0.8em] select-none">
+                      Stealth Engine Active
                     </div>
                 </motion.div>
-                <div className="absolute bottom-12 text-slate-900/50 text-[10px] uppercase tracking-widest select-none font-medium">
-                  Tap to Restore
+
+                {/* Simulated iPhone-style bottom controls to "Wake" */}
+                <div className="absolute bottom-16 inset-x-0 px-10 flex justify-between items-center">
+                  {/* Power/Flashlight Button Simulation */}
+                  <motion.button
+                    whileTap={{ scale: 0.9 }}
+                    onClick={toggleBlackout}
+                    className="w-12 h-12 rounded-full bg-slate-900/10 border border-slate-900/20 flex items-center justify-center text-slate-900/30 hover:bg-slate-900/40 hover:text-slate-800 transition-all active:ring-2 active:ring-slate-800"
+                  >
+                    <Zap className="w-5 h-5 fill-current" />
+                  </motion.button>
+
+                  <div className="flex flex-col items-center gap-2 pointer-events-none">
+                    <div className="w-32 h-1 bg-slate-900/20 rounded-full" />
+                    <span className="text-[10px] text-slate-900/40 uppercase tracking-[0.2em]">Ghost Mode</span>
+                  </div>
+
+                  {/* Camera Button Simulation - Also acts as unlock */}
+                  <motion.button
+                    whileTap={{ scale: 0.9 }}
+                    onClick={toggleBlackout}
+                    className="w-12 h-12 rounded-full bg-slate-900/10 border border-slate-900/20 flex items-center justify-center text-slate-900/30 hover:bg-slate-900/40 hover:text-slate-800 transition-all active:ring-2 active:ring-slate-800"
+                  >
+                    <Search className="w-5 h-5" />
+                  </motion.button>
+                </div>
+
+                <div className="absolute top-12 text-slate-900/20 text-[10px] font-mono select-none">
+                    {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </div>
               </motion.div>
             )}
